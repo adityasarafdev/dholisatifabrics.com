@@ -140,6 +140,12 @@ const footerLinks: Array<{
   },
 ];
 
+const companyHighlights = [
+  { value: "17+", label: "Product categories" },
+  { value: "Bulk", label: "Manufacturing ready" },
+  { value: "Fast", label: "Sampling turnaround" },
+];
+
 export default function Home() {
   const [expandedImage, setExpandedImage] = useState<{
     src: string;
@@ -256,6 +262,14 @@ export default function Home() {
             <span className={styles.pill}>Bulk manufacturing</span>
             <span className={styles.pill}>Fast sampling</span>
           </div>
+          <div className={styles.highlights}>
+            {companyHighlights.map((item) => (
+              <article key={item.label} className={styles.highlightCard}>
+                <p className={styles.highlightValue}>{item.value}</p>
+                <p className={styles.highlightLabel}>{item.label}</p>
+              </article>
+            ))}
+          </div>
         </header>
 
         <section id="products" className={styles.section}>
@@ -309,6 +323,7 @@ export default function Home() {
                       }}
                       unoptimized
                     />
+                    <span className={styles.imageHint}>Tap to preview</span>
                   </div>
                   <h3>{product.title}</h3>
                   <p>{product.description}</p>
