@@ -191,10 +191,12 @@ export default function Home() {
             />
             <span className={styles.navBrandName}>Shree Dholi Sati Fabrics</span>
           </div>
-          <div className={styles.navLinks}>
-            <a href="#products" className={styles.navLink}>Product Catalogue</a>
-            <a href="#manufacturing" className={styles.navLink}>Manufacturing</a>
-            <a href="#contact" className={styles.navLink}>Contact</a>
+          <div className={styles.navMenu}>
+            <div className={styles.navLinks}>
+              <a href="#products" className={styles.navLink}>Product</a>
+              <a href="#manufacturing" className={styles.navLink}>Manufacturing</a>
+              <a href="#contact" className={styles.navLink}>Contact</a>
+            </div>
             <a href={whatsappUrl} target="_blank" rel="noreferrer" className={styles.navButton}>
               <svg
                 width="18"
@@ -291,8 +293,9 @@ export default function Home() {
                     <Image
                       src={imagePathJpg}
                       alt={product.title}
-                      width={140}
-                      height={140}
+                      width={640}
+                      height={640}
+                      sizes="(max-width: 760px) 50vw, (max-width: 1000px) 50vw, 25vw"
                       className={styles.productImage}
                       placeholder="blur"
                       blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//Z"
@@ -310,7 +313,7 @@ export default function Home() {
                   <h3>{product.title}</h3>
                   <p>{product.description}</p>
                   <Link href={`/products/${product.slug}`} className={styles.learnMoreButton}>
-                    Learn more
+                    View details
                   </Link>
                 </div>
               );
