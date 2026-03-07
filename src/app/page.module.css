@@ -27,7 +27,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.98);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.96));
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(226, 232, 240, 0.8);
   box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
@@ -44,12 +44,32 @@
   gap: 24px;
   width: 100%;
   box-sizing: border-box;
+  border-radius: 0 0 16px 16px;
 }
 
 .navLogo {
   display: flex;
   align-items: center;
   gap: 12px;
+  position: relative;
+  padding-right: 18px;
+  margin-right: 6px;
+}
+
+.navLogo::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(
+    180deg,
+    rgba(148, 163, 184, 0),
+    rgba(148, 163, 184, 0.8),
+    rgba(148, 163, 184, 0)
+  );
 }
 
 .navLogo .logoImage {
@@ -80,6 +100,10 @@
   gap: 10px;
   flex-shrink: 0;
   min-width: 0;
+  padding: 4px;
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .navLinks {
@@ -993,6 +1017,14 @@
     flex: none;
     min-width: 0;
     width: 100%;
+    padding-right: 0;
+    margin-right: 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  }
+
+  .navLogo::after {
+    display: none;
   }
 
   .navLogo .logoImage {
@@ -1015,6 +1047,10 @@
     align-items: stretch;
     gap: 6px;
     overflow: hidden;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
   }
 
   .navLinks {
