@@ -1,95 +1,13 @@
 import { notFound } from "next/navigation";
-import styles from "./page.module.css";
+import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import styles from "./page.module.css";
+import { products, productSlugs } from "@/data/products";
+import { ProductIcon } from "@/components/ProductIcon";
 
-// Product data - matching the slugs from the main page
-const productData: Record<string, { title: string; description: string; content: string }> = {
-  "non-woven-bag": {
-    title: "Non Woven Bag",
-    description: "Durable non-woven carry bags for retail and promotions.",
-    content: "Our non-woven bags are crafted with high-quality materials to ensure durability and strength. Perfect for retail stores, promotional events, and everyday use. These bags offer excellent print quality for your branding needs and are available in various sizes and handle styles.",
-  },
-  "non-woven-fabric-roll": {
-    title: "Non Woven Fabric Roll",
-    description: "Non-woven fabric rolls for printing and branding.",
-    content: "Premium non-woven fabric rolls ideal for custom printing and branding applications. Available in multiple GSM options and widths to suit your specific requirements. These rolls are perfect for creating custom bags, covers, and promotional materials.",
-  },
-  "bopp-bag": {
-    title: "BOPP Bag",
-    description: "BOPP laminated bags with high-quality prints and strength.",
-    content: "BOPP (Biaxially Oriented Polypropylene) laminated bags provide exceptional print clarity and durability. These bags feature a glossy finish that enhances your brand's visual appeal. Ideal for premium retail packaging and promotional use.",
-  },
-  "hdpe-bag-roll": {
-    title: "HDPE Bag & Roll",
-    description: "HDPE bags and rolls for heavy-duty packaging and storage.",
-    content: "Heavy-duty HDPE (High-Density Polyethylene) bags and rolls designed for industrial and commercial applications. These bags offer superior strength and resistance, making them perfect for packaging heavy items, agricultural products, and bulk materials.",
-  },
-  "pp-bag": {
-    title: "PP Bag",
-    description: "Polypropylene bags for bulk, agriculture, and industrial use.",
-    content: "Polypropylene bags are versatile and cost-effective solutions for various industries. Suitable for agriculture, food packaging, and industrial applications. These bags are available in multiple sizes and can be customized with printing options.",
-  },
-  "canvas-tarpaulin": {
-    title: "Canvas Tarpaulin",
-    description: "Heavy-duty canvas tarps for cover and transport.",
-    content: "Durable canvas tarpaulins designed to withstand harsh weather conditions. Perfect for covering construction materials, vehicles, and outdoor equipment. Made from high-quality canvas material with reinforced edges for long-lasting performance.",
-  },
-  "shade-net-construction-net": {
-    title: "Shade Net (Construction Net)",
-    description: "Protective construction shade nets for sites and scaffolding.",
-    content: "Professional-grade shade nets for construction sites and scaffolding applications. These nets provide protection from sun, wind, and debris while maintaining visibility. Available in various densities and sizes to meet construction safety requirements.",
-  },
-  "loop-handle-bag": {
-    title: "Loop Handle Bag",
-    description: "Loop-handle carry bags for retail durability and comfort.",
-    content: "Comfortable loop-handle bags designed for retail and shopping applications. The reinforced handles ensure durability even with heavy loads. These bags are perfect for grocery stores, boutiques, and retail outlets, offering both functionality and style.",
-  },
-  "d-w-cut-bag": {
-    title: "D & W Cut Bag",
-    description: "D-cut and W-cut non-woven bags ready for branding.",
-    content: "Precision-cut D-cut and W-cut non-woven bags that are ready for your custom branding. These bags feature unique handle designs that provide comfort and style. Perfect for retail stores, events, and promotional campaigns.",
-  },
-  "printed-mask": {
-    title: "Printed Mask",
-    description: "Printed face masks for events and promotions.",
-    content: "Custom-printed face masks perfect for events, promotions, and brand awareness campaigns. Made from comfortable, breathable materials with high-quality printing. Available in various sizes and designs to match your branding requirements.",
-  },
-  "jute-bags": {
-    title: "Jute Bags",
-    description: "Eco-forward jute bags for merchandising and gifting.",
-    content: "Eco-friendly jute bags that combine sustainability with style. These natural fiber bags are perfect for environmentally conscious businesses and make excellent gift bags. Available in various sizes and can be customized with printing or embroidery.",
-  },
-  "cotton-canvas-conveyor-belt": {
-    title: "Cotton Canvas Conveyor Belt",
-    description: "Durable cotton canvas conveyor belts for industrial and commercial use.",
-    content: "Strong cotton canvas conveyor belts designed for industrial and commercial applications. These belts offer excellent durability and are specifically engineered for conveyor systems, machinery, and various industrial uses. Available in multiple widths and lengths to suit your specific conveyor requirements.",
-  },
-  "plastic-tarpaulin": {
-    title: "Plastic Tarpaulin",
-    description: "Waterproof plastic tarpaulins for cover and protection.",
-    content: "Waterproof plastic tarpaulins that provide reliable protection against rain, sun, and other weather elements. Ideal for covering construction sites, vehicles, equipment, and outdoor storage. Available in various thicknesses and sizes.",
-  },
-  "cotton-canvas-bag": {
-    title: "Cotton Canvas Bag",
-    description: "Strong cotton canvas bags for daily and retail use.",
-    content: "Durable cotton canvas bags perfect for daily use and retail applications. These bags offer excellent strength and longevity, making them ideal for shopping, travel, and everyday carry needs. Available in multiple sizes and can be customized with printing.",
-  },
-  "hessian-cloth": {
-    title: "Hessian Cloth",
-    description: "Hessian cloth rolls for packaging and industrial needs.",
-    content: "Natural hessian cloth rolls suitable for packaging, wrapping, and various industrial applications. This eco-friendly material is strong, breathable, and biodegradable. Perfect for agricultural packaging, craft projects, and protective wrapping.",
-  },
-  "nylon-threads": {
-    title: "Nylon Threads",
-    description: "Nylon threads for stitching and reinforcement.",
-    content: "High-strength nylon threads designed for stitching and reinforcement applications. These threads offer excellent durability and resistance to wear and tear. Perfect for bag manufacturing, upholstery, and industrial sewing applications.",
-  },
-  "polypropylene-niwar": {
-    title: "Polypropylene Niwar",
-    description: "Polypropylene niwar for webbing and support.",
-    content: "Polypropylene niwar (webbing) strips ideal for creating handles, straps, and support structures. These strips offer excellent strength and flexibility, making them perfect for bag handles, luggage straps, and various reinforcement applications.",
-  },
-};
+const siteUrl = "https://www.dholisatifabrics.com";
+const siteName = "Shree Dholi Sati Fabrics";
 
 interface ProductPageProps {
   params: Promise<{
@@ -97,27 +15,277 @@ interface ProductPageProps {
   }>;
 }
 
+export async function generateStaticParams() {
+  return productSlugs.map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const product = products[slug];
+  if (!product) return {};
+  const url = `${siteUrl}/products/${slug}`;
+  return {
+    title: product.title,
+    description: product.intro,
+    keywords: [
+      product.title,
+      ...product.heroBadges,
+      ...product.uses.map((u) => u.label),
+      "manufacturer",
+      "Patna",
+      "Bihar",
+      "India",
+    ],
+    alternates: { canonical: `/products/${slug}` },
+    openGraph: {
+      type: "website",
+      url,
+      title: `${product.title} — ${siteName}`,
+      description: product.intro,
+      siteName,
+      images: [
+        {
+          url: product.hero.src,
+          width: 720,
+          height: 720,
+          alt: product.hero.alt,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${product.title} — ${siteName}`,
+      description: product.intro,
+      images: [product.hero.src],
+    },
+  };
+}
+
+function pad(n: number): string {
+  return n.toString().padStart(2, "0");
+}
+
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = productData[slug];
+  const product = products[slug];
 
   if (!product) {
     notFound();
   }
 
+  const hasOptions = Boolean(
+    product.colors?.length ||
+      product.sizes?.length ||
+      product.gsm?.length ||
+      product.customization?.length,
+  );
+
+  const sections: { key: string; title: string }[] = [];
+  if (product.highlights.length > 0) sections.push({ key: "highlights", title: "Why this product" });
+  if (product.features.length > 0) sections.push({ key: "features", title: "Specifications" });
+  if (product.uses.length > 0) sections.push({ key: "uses", title: "Applications" });
+  if (hasOptions) sections.push({ key: "options", title: "Options & Customisation" });
+
+  const sectionNumber = (key: string) =>
+    pad(sections.findIndex((s) => s.key === key) + 1);
+
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.title,
+    description: product.intro,
+    image: `${siteUrl}${product.hero.src}`,
+    url: `${siteUrl}/products/${slug}`,
+    brand: { "@type": "Brand", name: siteName },
+    manufacturer: {
+      "@type": "Organization",
+      name: siteName,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Patna",
+        addressRegion: "Bihar",
+        addressCountry: "IN",
+      },
+    },
+    category: "Industrial Bags & Materials",
+    additionalProperty: [
+      ...(product.sizes ? [{ "@type": "PropertyValue", name: "Sizes", value: product.sizes.join(", ") }] : []),
+      ...(product.gsm ? [{ "@type": "PropertyValue", name: "GSM", value: product.gsm.join(", ") }] : []),
+      ...(product.colors ? [{ "@type": "PropertyValue", name: "Colours", value: product.colors.map((c) => c.label).join(", ") }] : []),
+    ],
+  };
+
   return (
     <div className={styles.page}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       <div className={styles.container}>
         <Link href="/" className={styles.backLink}>
-          ← Back to products
+          <span aria-hidden="true">←</span> Back to products
         </Link>
-        <div className={styles.content}>
-          <h1 className={styles.title}>{product.title}</h1>
-          <p className={styles.description}>{product.description}</p>
-          <div className={styles.productContent}>
-            <p>{product.content}</p>
-          </div>
-        </div>
+
+        <article className={styles.catalogue}>
+          <section className={styles.hero}>
+            <div className={styles.heroText}>
+              <div className={styles.heroEyebrow}>
+                <span className={styles.heroEyebrowDot} aria-hidden="true" />
+                {product.tagline}
+              </div>
+              <h1 className={styles.heroTitle}>{product.title}</h1>
+              <p className={styles.heroIntro}>{product.intro}</p>
+              {product.heroBadges.length > 0 && (
+                <div className={styles.heroBadges}>
+                  {product.heroBadges.map((badge, i) => (
+                    <span key={i} className={styles.heroBadge}>
+                      {badge}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className={styles.heroImage}>
+              <Image
+                src={product.hero.src}
+                alt={product.hero.alt}
+                width={640}
+                height={640}
+                priority
+              />
+            </div>
+          </section>
+
+          {product.highlights.length > 0 && (
+            <section className={styles.section}>
+              <header className={styles.sectionHeader}>
+                <span className={styles.sectionNumber}>{sectionNumber("highlights")}</span>
+                <h2 className={styles.sectionTitle}>Why this product</h2>
+              </header>
+              <div className={styles.highlights}>
+                {product.highlights.map((h, i) => (
+                  <div key={i} className={styles.highlightCard}>
+                    <span className={styles.highlightIcon}>
+                      <ProductIcon name={h.icon} size={20} />
+                    </span>
+                    <div className={styles.highlightBody}>
+                      <span className={styles.highlightLabel}>{h.label}</span>
+                      {h.description && (
+                        <span className={styles.highlightDescription}>{h.description}</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {product.features.length > 0 && (
+            <section className={styles.section}>
+              <header className={styles.sectionHeader}>
+                <span className={styles.sectionNumber}>{sectionNumber("features")}</span>
+                <h2 className={styles.sectionTitle}>Specifications</h2>
+              </header>
+              <ul className={styles.featuresList}>
+                {product.features.map((f, i) => (
+                  <li key={i} className={styles.featureItem}>
+                    <span className={styles.featureCheck}>
+                      <ProductIcon name={f.icon} size={14} strokeWidth={2.5} />
+                    </span>
+                    <span>{f.label}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {product.uses.length > 0 && (
+            <section className={styles.section}>
+              <header className={styles.sectionHeader}>
+                <span className={styles.sectionNumber}>{sectionNumber("uses")}</span>
+                <h2 className={styles.sectionTitle}>Applications</h2>
+              </header>
+              <div className={styles.usesGrid}>
+                {product.uses.map((u, i) => (
+                  <div key={i} className={styles.useCard}>
+                    <span className={styles.useIcon}>
+                      <ProductIcon name={u.icon} size={22} />
+                    </span>
+                    <span className={styles.useLabel}>{u.label}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {hasOptions && (
+            <section className={styles.section}>
+              <header className={styles.sectionHeader}>
+                <span className={styles.sectionNumber}>{sectionNumber("options")}</span>
+                <h2 className={styles.sectionTitle}>Options & Customisation</h2>
+              </header>
+              <div className={styles.options}>
+                {product.colors && product.colors.length > 0 && (
+                  <div className={styles.optionBlock}>
+                    <h3 className={styles.optionTitle}>Available Colours</h3>
+                    <div className={styles.colorGrid}>
+                      {product.colors.map((c, i) => (
+                        <div
+                          key={i}
+                          className={styles.colorSwatch}
+                          style={{ background: c.hex }}
+                          title={c.label}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {product.sizes && product.sizes.length > 0 && (
+                  <div className={styles.optionBlock}>
+                    <h3 className={styles.optionTitle}>Available Sizes</h3>
+                    <div className={styles.sizeGrid}>
+                      {product.sizes.map((s, i) => (
+                        <span key={i} className={styles.sizeChip}>{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {product.gsm && product.gsm.length > 0 && (
+                  <div className={styles.optionBlock}>
+                    <h3 className={styles.optionTitle}>GSM Options</h3>
+                    <div className={styles.sizeGrid}>
+                      {product.gsm.map((g, i) => (
+                        <span key={i} className={styles.gsmChip}>{g}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {product.customization && product.customization.length > 0 && (
+                  <div className={styles.optionBlock}>
+                    <h3 className={styles.optionTitle}>Custom Made</h3>
+                    <div className={styles.customGrid}>
+                      {product.customization.map((c, i) => (
+                        <div key={i} className={styles.customItem}>
+                          <span className={styles.customIcon}>
+                            <ProductIcon name={c.icon} size={18} />
+                          </span>
+                          <span>{c.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          <footer className={styles.cataloguefooter}>
+            <p className={styles.footerTagline}>{product.footerTagline}</p>
+          </footer>
+        </article>
       </div>
     </div>
   );
