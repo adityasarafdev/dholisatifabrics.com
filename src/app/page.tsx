@@ -225,23 +225,31 @@ export default function Home() {
             </div>
 
             <div className={styles.heroVisual}>
-              <div className={styles.heroVisualMain}>
+              <div className={styles.heroVisualThumb}>
                 <Image
-                  src="/products/hdpe-bag-sacks.jpg"
-                  alt="HDPE Bags & Sacks"
-                  width={640}
-                  height={640}
+                  src="/products/bopp-bag.jpg"
+                  alt="BOPP Bag"
+                  width={480}
+                  height={480}
                   className={styles.heroVisualImage}
                   priority
                 />
               </div>
-              <div className={styles.heroVisualStack}>
-                <div className={styles.heroVisualThumb}>
-                  <Image src="/products/hdpe-tarpaulin.jpg" alt="HDPE Tarpaulin" width={300} height={300} className={styles.heroVisualImage} />
-                </div>
-                <div className={styles.heroVisualThumb}>
-                  <Image src="/products/delivery-cargo-bags.jpg" alt="Delivery Cargo Bag" width={300} height={300} className={styles.heroVisualImage} />
-                </div>
+              <div className={styles.heroVisualThumb}>
+                <Image
+                  src="/products/packaging-pouches.jpg"
+                  alt="Packaging Pouches"
+                  width={480}
+                  height={480}
+                  className={styles.heroVisualImage}
+                  priority
+                />
+              </div>
+              <div className={styles.heroVisualThumb}>
+                <Image src="/products/non-woven-bag.jpg" alt="Non Woven Bag" width={480} height={480} className={styles.heroVisualImage} />
+              </div>
+              <div className={styles.heroVisualThumb}>
+                <Image src="/products/jute-bags.jpg" alt="Jute Bag" width={480} height={480} className={styles.heroVisualImage} />
               </div>
             </div>
           </div>
@@ -479,12 +487,14 @@ export default function Home() {
 
       {expandedImage && (
         <div className={styles.modalOverlay} onClick={closeModal}>
+          <button className={styles.closeButton} onClick={closeModal} aria-label="Close preview" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="6" y1="6" x2="18" y2="18" />
+              <line x1="18" y1="6" x2="6" y2="18" />
+            </svg>
+          </button>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.closeButton} onClick={closeModal} aria-label="Close preview">×</button>
-            <div className={styles.modalImageWrapper}>
-              <Image src={expandedImage.src} alt={expandedImage.title} width={1200} height={1200} className={styles.modalImage} unoptimized />
-            </div>
-            <p className={styles.modalTitle}>{expandedImage.title}</p>
+            <Image src={expandedImage.src} alt={expandedImage.title} width={1200} height={1200} className={styles.modalImage} unoptimized />
           </div>
         </div>
       )}
