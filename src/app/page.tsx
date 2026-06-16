@@ -40,12 +40,24 @@ const siteName = "Shree Dholi Sati Fabrics";
 
 const businessJsonLd = {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
+  "@type": ["LocalBusiness", "Manufacturer"],
   "@id": `${siteUrl}#business`,
   name: siteName,
   legalName: siteName,
-  image: `${siteUrl}/logo.jpeg`,
-  logo: `${siteUrl}/logo.jpeg`,
+  description:
+    "Manufacturer of industrial bags, tarpaulins, non-woven rolls, HDPE/LDPE sheets, jute bags and printed packaging based in Patna, Bihar with pan-India shipping.",
+  image: {
+    "@type": "ImageObject",
+    url: `${siteUrl}/logo.jpeg`,
+    width: 800,
+    height: 800,
+  },
+  logo: {
+    "@type": "ImageObject",
+    url: `${siteUrl}/logo.jpeg`,
+    width: 800,
+    height: 800,
+  },
   url: siteUrl,
   telephone: ["+91-9661870000", "+91-7903082781"],
   email: "dholisatifabrics89@gmail.com",
@@ -60,10 +72,45 @@ const businessJsonLd = {
     latitude: 25.5954,
     longitude: 85.1481,
   },
+  hasMap:
+    "https://www.google.com/maps/place/Shree+Dholi+Sati+Fabrics/@25.59545676802641,85.14813961617837",
   taxID: "10BLDPS1721F1ZP",
   vatID: "10BLDPS1721F1ZP",
   priceRange: "₹₹",
+  currenciesAccepted: "INR",
+  paymentAccepted: "Cash, Bank Transfer, UPI, Cheque",
   areaServed: { "@type": "Country", name: "India" },
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      telephone: "+91-9661870000",
+      contactType: "sales",
+      areaServed: "IN",
+      availableLanguage: ["en", "hi"],
+    },
+    {
+      "@type": "ContactPoint",
+      telephone: "+91-7903082781",
+      contactType: "customer support",
+      areaServed: "IN",
+      availableLanguage: ["en", "hi"],
+    },
+  ],
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ],
+      opens: "09:00",
+      closes: "19:00",
+    },
+  ],
   knowsAbout: [
     "Non-Woven Bags",
     "HDPE & LDPE Sheets",
@@ -82,6 +129,20 @@ const websiteJsonLd = {
   url: siteUrl,
   inLanguage: "en-IN",
   publisher: { "@id": `${siteUrl}#business` },
+};
+
+const productCatalogJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: `${siteName} — Product Catalogue`,
+  itemListOrder: "https://schema.org/ItemListOrderAscending",
+  numberOfItems: productCategories.length,
+  itemListElement: productCategories.map((category, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    url: `${siteUrl}/products/${category.slug}`,
+    name: category.title,
+  })),
 };
 
 const heroMetrics = [
@@ -153,6 +214,10 @@ export default function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productCatalogJsonLd) }}
       />
       <nav className={styles.navbar}>
         <div className={styles.navContainer}>
@@ -440,13 +505,23 @@ export default function Home() {
                 <div className={styles.complianceRow}>
                   <span className={styles.complianceKey}>GSTIN</span>
                   <span className={styles.complianceValue}>10BLDPS1721F1ZP</span>
-                  <span className={styles.complianceCheck} title="GST registered" aria-label="GST registered">
+                  <span className={styles.complianceCheck} data-tooltip="Verified" aria-label="Verified" tabIndex={0}>
                     <ProductIcon name="checkCircle" size={14} strokeWidth={2.4} />
                   </span>
                 </div>
                 <div className={styles.complianceRow}>
                   <span className={styles.complianceKey}>PAN</span>
                   <span className={styles.complianceValue}>BLDPS1721F</span>
+                  <span className={styles.complianceCheck} data-tooltip="Verified" aria-label="Verified" tabIndex={0}>
+                    <ProductIcon name="checkCircle" size={14} strokeWidth={2.4} />
+                  </span>
+                </div>
+                <div className={styles.complianceRow}>
+                  <span className={styles.complianceKey}>IEC Compliant</span>
+                  <span className={styles.complianceValue}>BLDPS1721F</span>
+                  <span className={styles.complianceCheck} data-tooltip="Verified" aria-label="Verified" tabIndex={0}>
+                    <ProductIcon name="checkCircle" size={14} strokeWidth={2.4} />
+                  </span>
                 </div>
                 <div className={styles.complianceRow}>
                   <span className={styles.complianceKey}>Entity</span>
