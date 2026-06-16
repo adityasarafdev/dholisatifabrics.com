@@ -174,11 +174,33 @@ const processSteps = [
   { icon: "send", title: "Deliver", description: "Securely packed and shipped pan-India. Bulk-ready logistics for predictable supply." },
 ];
 
+const defaultHeroProducts = [
+  { title: "BOPP Bag", slug: "bopp-bag" },
+  { title: "Packaging Pouches", slug: "packaging-pouches" },
+  { title: "Non Woven Bag", slug: "non-woven-bag" },
+  { title: "Jute Bag", slug: "jute-bags" },
+];
+
 export default function Home() {
   const [expandedImage, setExpandedImage] = useState<{
     src: string;
     title: string;
   } | null>(null);
+
+  const [heroProducts, setHeroProducts] =
+    useState<{ title: string; slug: string }[]>(defaultHeroProducts);
+
+  useEffect(() => {
+    const pickFour = () => {
+      const shuffled = [...productCategories].sort(() => Math.random() - 0.5);
+      setHeroProducts(
+        shuffled.slice(0, 4).map((p) => ({ title: p.title, slug: p.slug })),
+      );
+    };
+    pickFour();
+    const id = setInterval(pickFour, 4000);
+    return () => clearInterval(id);
+  }, []);
 
   const handleImageClick = (product: { title: string; slug: string }) => {
     setExpandedImage({
@@ -290,32 +312,18 @@ export default function Home() {
             </div>
 
             <div className={styles.heroVisual}>
-              <div className={styles.heroVisualThumb}>
-                <Image
-                  src="/products/bopp-bag.jpg"
-                  alt="BOPP Bag"
-                  width={480}
-                  height={480}
-                  className={styles.heroVisualImage}
-                  priority
-                />
-              </div>
-              <div className={styles.heroVisualThumb}>
-                <Image
-                  src="/products/packaging-pouches.jpg"
-                  alt="Packaging Pouches"
-                  width={480}
-                  height={480}
-                  className={styles.heroVisualImage}
-                  priority
-                />
-              </div>
-              <div className={styles.heroVisualThumb}>
-                <Image src="/products/non-woven-bag.jpg" alt="Non Woven Bag" width={480} height={480} className={styles.heroVisualImage} />
-              </div>
-              <div className={styles.heroVisualThumb}>
-                <Image src="/products/jute-bags.jpg" alt="Jute Bag" width={480} height={480} className={styles.heroVisualImage} />
-              </div>
+              {heroProducts.map((product, i) => (
+                <div key={product.slug} className={styles.heroVisualThumb}>
+                  <Image
+                    src={`/products/${product.slug}.jpg`}
+                    alt={product.title}
+                    width={480}
+                    height={480}
+                    className={styles.heroVisualImage}
+                    priority={i < 2}
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </section>
