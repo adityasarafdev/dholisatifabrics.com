@@ -28,8 +28,23 @@ const productCategories = [
   { title: "Packaging Pouches", description: "High-quality packaging pouches for food and consumer products.", slug: "packaging-pouches" },
   { title: "LDPE Sheets", description: "Strong, flexible LDPE sheets for industrial and commercial use.", slug: "ldpe-sheets" },
   { title: "Polypropylene Niwar", description: "Polypropylene niwar for webbing and support.", slug: "polypropylene-niwar" },
-  { title: "Bag Closer Thread", description: "Premium spun polyester bag closer thread for high-speed machines.", slug: "bag-closer-thread" },
+  { title: "Bag Closer Thread", description: "Premium cotton & polyester bag closer thread for high-speed machines.", slug: "bag-closer-thread" },
   { title: "Nylon Threads", description: "Nylon threads for stitching and reinforcement.", slug: "nylon-threads" },
+  { title: "Non Woven Box Bags", description: "Printed non-woven box bags with side gusset for sweets and retail.", slug: "non-woven-box-bag" },
+  { title: "HDPE Carry Bags", description: "Laminated woven HDPE carry bags with stitched handles.", slug: "hdpe-carry-bag" },
+  { title: "Printed Cotton Shopping Bags", description: "Laminated cotton shopping bags with side gusset and custom print.", slug: "printed-cotton-shopping-bag" },
+  { title: "Canvas Jumbo Bags", description: "Large canvas bags with lifting handles for grain and bulk storage.", slug: "canvas-jumbo-bag" },
+  { title: "Canvas Wall Organizer", description: "Hanging canvas organizer with deep pockets for tools and supplies.", slug: "canvas-wall-organizer" },
+  { title: "Laminated Cotton Cloth", description: "Cotton canvas cloth laminated on one side for bag making.", slug: "laminated-cotton-cloth" },
+  { title: "LDPE Liner Bags", description: "Transparent LDPE liner bags for food, spices, and cartons.", slug: "ldpe-liner-bag" },
+  { title: "Stretch Film Rolls", description: "Transparent stretch film rolls for pallet and carton wrapping.", slug: "stretch-film" },
+  { title: "BOPP Printed Film Rolls", description: "Custom printed laminated film rolls for pouches and auto packing.", slug: "bopp-printed-film-roll" },
+  { title: "BOPP Sticker Labels", description: "Water resistant BOPP sticker labels for bottles and jars.", slug: "bopp-sticker-labels" },
+  { title: "Self-Adhesive Packaging Labels", description: "Printed self-adhesive labels on rolls for pouches, jars, and boxes.", slug: "self-adhesive-labels" },
+  { title: "Bag Closer Sewing Machine", description: "Portable electric bag closer for PP, HDPE, jute, and paper sacks.", slug: "bag-closer-sewing-machine" },
+  { title: "Continuous Band Sealer Machine", description: "Horizontal band sealer for continuous sealing of pouches and bags.", slug: "continuous-band-sealer-machine" },
+  { title: "Vertical Band Sealer Machine", description: "Band sealer with stand for sealing standing pouches of loose products.", slug: "vertical-band-sealer-machine" },
+  { title: "Handheld Inkjet Printer", description: "Portable inkjet coder for batch, MFG, EXP dates, and QR codes.", slug: "handheld-inkjet-printer" },
 ];
 
 const whatsappUrl =
@@ -119,6 +134,9 @@ const businessJsonLd = {
     "Jute Bags",
     "Packaging Pouches",
     "Industrial Threads",
+    "Packaging Labels",
+    "Stretch Film",
+    "Packaging Machines",
   ],
 };
 
@@ -146,7 +164,7 @@ const productCatalogJsonLd = {
 };
 
 const heroMetrics = [
-  { value: "17+", label: "Product categories" },
+  { value: "35+", label: "Product categories" },
   { value: "Bulk", label: "Manufacturing ready" },
   { value: "Fast", label: "Sampling turnaround" },
 ];
