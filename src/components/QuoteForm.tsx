@@ -12,8 +12,7 @@ import {
   normalizeIndianPhone,
   type QuoteProductOption,
 } from "@/lib/quote";
-
-const whatsappNumber = "9661870000";
+import { whatsappLink } from "@/lib/contact";
 
 type QuoteButtonProps = {
   children: ReactNode;
@@ -58,7 +57,8 @@ function QuoteDialog({
 }) {
   const formId = useId();
   const [openedAt] = useState(() => Date.now());
-  const firstFieldRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const successHeadingRef = useRef<HTMLHeadingElement>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState("");
@@ -67,18 +67,45 @@ function QuoteDialog({
   const [submittedEmail, setSubmittedEmail] = useState("");
 
   useEffect(() => {
+    const trigger = document.activeElement as HTMLElement | null;
+    const focusable = () =>
+      Array.from(
+        dialogRef.current?.querySelectorAll<HTMLElement>(
+          "a[href], button:not([disabled]), input:not([tabindex='-1']), select, textarea",
+        ) ?? [],
+      );
+
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
+      // Keep keyboard focus inside the dialog.
+      if (e.key === "Tab") {
+        const items = focusable();
+        if (items.length === 0) return;
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     document.addEventListener("keydown", onKey);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    firstFieldRef.current?.focus();
+    dialogRef.current?.querySelector<HTMLElement>("form input:not([tabindex='-1']), form select")?.focus();
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = previousOverflow;
+      trigger?.focus();
     };
   }, [onClose]);
+
+  useEffect(() => {
+    if (status === "success") successHeadingRef.current?.focus();
+  }, [status]);
 
   const productSlug = product ? product.slug : selectedSlug;
   const productTitle = product
@@ -136,7 +163,7 @@ function QuoteDialog({
     }
   }
 
-  const whatsappText = encodeURIComponent(
+  const whatsappUrl = whatsappLink(
     productTitle
       ? `Hi, I just requested a quote for ${productTitle} on your website.`
       : "Hi, I just requested a quote on your website.",
@@ -145,6 +172,7 @@ function QuoteDialog({
   return createPortal(
     <div className={styles.backdrop} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div
+        ref={dialogRef}
         className={styles.dialog}
         role="dialog"
         aria-modal="true"
@@ -161,7 +189,7 @@ function QuoteDialog({
             <span className={styles.successIcon}>
               <ProductIcon name="checkCircle" size={28} />
             </span>
-            <h2 id={`${formId}-title`} className={styles.title}>
+            <h2 id={`${formId}-title`} className={styles.title} ref={successHeadingRef} tabIndex={-1}>
               Thank you{submittedName ? `, ${submittedName}` : ""}!
             </h2>
             <p className={styles.lead}>
@@ -176,7 +204,7 @@ function QuoteDialog({
             <div className={styles.successActions}>
               <a
                 className={styles.secondaryButton}
-                href={`https://wa.me/${whatsappNumber}?text=${whatsappText}`}
+                href={whatsappUrl}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -229,6 +257,7 @@ function QuoteDialog({
                     value={selectedSlug}
                     onChange={(e) => setSelectedSlug(e.target.value)}
                     aria-invalid={Boolean(errors.product)}
+                    aria-describedby={errors.product ? `${formId}-product-error` : undefined}
                   >
                     <option value="" disabled>
                       Choose a product
@@ -252,19 +281,20 @@ function QuoteDialog({
                     maxLength={fieldLimits.otherProduct}
                     placeholder="e.g. Printed jute bags and HDPE rolls"
                     aria-invalid={Boolean(errors.otherProduct)}
+                    aria-describedby={errors.otherProduct ? `${formId}-other-error` : undefined}
                   />
                 </Field>
               )}
 
               <Field label="Your name" required error={errors.name} htmlFor={`${formId}-name`}>
                 <input
-                  ref={firstFieldRef}
                   id={`${formId}-name`}
                   name="name"
                   className={styles.input}
                   autoComplete="name"
                   maxLength={fieldLimits.name}
                   aria-invalid={Boolean(errors.name)}
+                  aria-describedby={errors.name ? `${formId}-name-error` : undefined}
                 />
               </Field>
 
@@ -281,6 +311,7 @@ function QuoteDialog({
                     maxLength={fieldLimits.phone}
                     placeholder="98765 43210"
                     aria-invalid={Boolean(errors.phone)}
+                    aria-describedby={errors.phone ? `${formId}-phone-error` : undefined}
                   />
                 </div>
               </Field>
@@ -295,6 +326,7 @@ function QuoteDialog({
                   maxLength={fieldLimits.email}
                   placeholder="you@example.com"
                   aria-invalid={Boolean(errors.email)}
+                  aria-describedby={errors.email ? `${formId}-email-error` : undefined}
                 />
               </Field>
 
@@ -306,6 +338,7 @@ function QuoteDialog({
                   rows={3}
                   maxLength={fieldLimits.message}
                   aria-invalid={Boolean(errors.message)}
+                  aria-describedby={errors.message ? `${formId}-message-error` : undefined}
                   placeholder="Quantity, size, colour, printing or anything else we should know"
                 />
               </Field>
@@ -363,7 +396,11 @@ function Field({
         {required ? <span className={styles.required}> *</span> : <span className={styles.optional}> (optional)</span>}
       </label>
       {children}
-      {error && <span className={styles.error}>{error}</span>}
+      {error && (
+        <span id={`${htmlFor}-error`} className={styles.error}>
+          {error}
+        </span>
+      )}
     </div>
   );
 }

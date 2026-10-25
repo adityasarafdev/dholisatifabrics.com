@@ -6,10 +6,10 @@ import styles from "./page.module.css";
 import { products, productSlugs } from "@/data/products";
 import { ProductIcon } from "@/components/ProductIcon";
 import { QuoteButton } from "@/components/QuoteForm";
+import { whatsappLink } from "@/lib/contact";
 
 const siteUrl = "https://www.dholisatifabrics.com";
 const siteName = "Shree Dholi Sati Fabrics";
-const whatsappNumber = "9661870000";
 
 interface ProductPageProps {
   params: Promise<{
@@ -48,8 +48,6 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       images: [
         {
           url: product.hero.src,
-          width: 720,
-          height: 720,
           alt: product.hero.alt,
         },
       ],
@@ -89,9 +87,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (hasOptions) sections.push({ key: "options", title: "Options & Customisation" });
 
   const quoteProduct = { slug: product.slug, title: product.title };
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-    `Hi, I'm interested in ${product.title}. Please share price and details.`,
-  )}`;
+  const whatsappUrl = whatsappLink(`Hi, I'm interested in ${product.title}. Please share price and details.`);
 
   const sectionNumber = (key: string) =>
     pad(sections.findIndex((s) => s.key === key) + 1);
@@ -280,6 +276,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
                           className={styles.colorSwatch}
                           style={{ background: c.hex }}
                           title={c.label}
+                          role="img"
+                          aria-label={c.label}
                         />
                       ))}
                     </div>

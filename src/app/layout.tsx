@@ -76,8 +76,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/logo.jpeg",
-        width: 800,
-        height: 800,
+        width: 750,
+        height: 750,
         alt: siteName,
       },
     ],
@@ -103,10 +103,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/icon.png", type: "image/png", sizes: "32x32" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
       { url: "/favicon.ico", sizes: "any" },
     ],
-    apple: [{ url: "/icon.png", type: "image/png", sizes: "180x180" }],
+    apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
     shortcut: "/favicon.ico",
   },
   verification: {

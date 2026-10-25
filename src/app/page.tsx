@@ -2,28 +2,29 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "./page.module.css";
 import { ProductIcon } from "@/components/ProductIcon";
 import { QuoteButton } from "@/components/QuoteForm";
+import { whatsappLink } from "@/lib/contact";
 
 const productCategories = [
-  { title: "Non Woven Bag", description: "Durable non-woven carry bags for retail and promotions.", slug: "non-woven-bag" },
-  { title: "Non Woven Fabric Roll", description: "Non-woven fabric rolls for printing and branding.", slug: "non-woven-fabric-roll" },
-  { title: "BOPP Bag", description: "BOPP laminated bags with high-quality prints and strength.", slug: "bopp-bag" },
+  { title: "Non Woven Bags", description: "Durable non-woven carry bags for retail and promotions.", slug: "non-woven-bag" },
+  { title: "Non Woven Rolls", description: "Non-woven fabric rolls for printing and branding.", slug: "non-woven-fabric-roll" },
+  { title: "BOPP Bags", description: "BOPP laminated bags with high-quality prints and strength.", slug: "bopp-bag" },
   { title: "HDPE Bags & Sacks", description: "Heavy-duty HDPE bags and sacks for industrial packaging.", slug: "hdpe-bag-sacks" },
   { title: "HDPE Rolls", description: "Premium HDPE rolls for packaging and protection.", slug: "hdpe-rolls" },
   { title: "HDPE Tarpaulin", description: "HDPE tarpaulin for industrial cover and protection.", slug: "hdpe-tarpaulin" },
-  { title: "PP Bag", description: "Polypropylene bags for bulk, agriculture, and industrial use.", slug: "pp-bag" },
+  { title: "PP Bags", description: "Polypropylene bags for bulk, agriculture, and industrial use.", slug: "pp-bag" },
   { title: "Canvas Tarpaulin", description: "Heavy-duty canvas tarps for cover and transport.", slug: "canvas-tarpaulin" },
   { title: "Plastic Tarpaulin", description: "Waterproof plastic tarpaulins for cover and protection.", slug: "plastic-tarpaulin" },
-  { title: "Shade Net", description: "Protective construction shade nets for sites and scaffolding.", slug: "shade-net-construction-net" },
-  { title: "Loop Handle Bag", description: "Loop-handle carry bags for retail durability and comfort.", slug: "loop-handle-bag" },
-  { title: "D & W Cut Bag", description: "D-cut and W-cut non-woven bags ready for branding.", slug: "d-w-cut-bag" },
-  { title: "Printed Mask", description: "Printed face masks for events and promotions.", slug: "printed-mask" },
+  { title: "Shade Net (Construction Net)", description: "Protective construction shade nets for sites and scaffolding.", slug: "shade-net-construction-net" },
+  { title: "Loop Handle Bags", description: "Loop-handle carry bags for retail durability and comfort.", slug: "loop-handle-bag" },
+  { title: "D & W Cut Bags", description: "D-cut and W-cut non-woven bags ready for branding.", slug: "d-w-cut-bag" },
+  { title: "Printed Masks", description: "Printed face masks for events and promotions.", slug: "printed-mask" },
   { title: "Jute Bags", description: "Eco-forward jute bags for merchandising and gifting.", slug: "jute-bags" },
   { title: "Cotton Canvas Conveyor Belt", description: "Durable cotton canvas conveyor belts for industrial use.", slug: "cotton-canvas-conveyor-belt" },
-  { title: "Cotton Canvas Bag", description: "Strong cotton canvas bags for daily and retail use.", slug: "cotton-canvas-bag" },
+  { title: "Cotton Canvas Bags", description: "Strong cotton canvas bags for daily and retail use.", slug: "cotton-canvas-bag" },
   { title: "Hessian Cloth", description: "Hessian cloth rolls for packaging and industrial needs.", slug: "hessian-cloth" },
   { title: "Delivery Cargo Bags", description: "Extra-large cargo bags for e-commerce, courier, and logistics.", slug: "delivery-cargo-bags" },
   { title: "Packaging Pouches", description: "High-quality packaging pouches for food and consumer products.", slug: "packaging-pouches" },
@@ -50,15 +51,14 @@ const productCategories = [
 
 const quoteOptions = productCategories.map(({ slug, title }) => ({ slug, title }));
 
-const whatsappUrl =
-  "https://wa.me/9661870000?text=Hi%2C%20I%27m%20interested%20in%20your%20products.";
+const whatsappUrl = whatsappLink("Hi, I'm interested in your products.");
 
 const siteUrl = "https://www.dholisatifabrics.com";
 const siteName = "Shree Dholi Sati Fabrics";
 
 const businessJsonLd = {
   "@context": "https://schema.org",
-  "@type": ["LocalBusiness", "Manufacturer"],
+  "@type": "LocalBusiness",
   "@id": `${siteUrl}#business`,
   name: siteName,
   legalName: siteName,
@@ -67,14 +67,14 @@ const businessJsonLd = {
   image: {
     "@type": "ImageObject",
     url: `${siteUrl}/logo.jpeg`,
-    width: 800,
-    height: 800,
+    width: 750,
+    height: 750,
   },
   logo: {
     "@type": "ImageObject",
     url: `${siteUrl}/logo.jpeg`,
-    width: 800,
-    height: 800,
+    width: 750,
+    height: 750,
   },
   url: siteUrl,
   telephone: ["+91-9661870000", "+91-7903082781"],
@@ -195,11 +195,18 @@ const processSteps = [
   { icon: "send", title: "Deliver", description: "Securely packed and shipped pan-India. Bulk-ready logistics for predictable supply." },
 ];
 
+function pickHeroProducts() {
+  return [...productCategories]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 4)
+    .map((p) => ({ title: p.title, slug: p.slug }));
+}
+
 const defaultHeroProducts = [
-  { title: "BOPP Bag", slug: "bopp-bag" },
+  { title: "BOPP Bags", slug: "bopp-bag" },
   { title: "Packaging Pouches", slug: "packaging-pouches" },
-  { title: "Non Woven Bag", slug: "non-woven-bag" },
-  { title: "Jute Bag", slug: "jute-bags" },
+  { title: "Non Woven Bags", slug: "non-woven-bag" },
+  { title: "Jute Bags", slug: "jute-bags" },
 ];
 
 export default function Home() {
@@ -211,19 +218,20 @@ export default function Home() {
   const [heroProducts, setHeroProducts] =
     useState<{ title: string; slug: string }[]>(defaultHeroProducts);
 
+  const [heroPaused, setHeroPaused] = useState(false);
+  const previewTriggerRef = useRef<HTMLElement | null>(null);
+  const previewCloseRef = useRef<HTMLButtonElement>(null);
+
+  // Start from the default tiles so server and client render the same HTML, then
+  // rotate, pausing on hover and for visitors who prefer reduced motion.
   useEffect(() => {
-    const pickFour = () => {
-      const shuffled = [...productCategories].sort(() => Math.random() - 0.5);
-      setHeroProducts(
-        shuffled.slice(0, 4).map((p) => ({ title: p.title, slug: p.slug })),
-      );
-    };
-    pickFour();
-    const id = setInterval(pickFour, 4000);
+    if (heroPaused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = setInterval(() => setHeroProducts(pickHeroProducts()), 4000);
     return () => clearInterval(id);
-  }, []);
+  }, [heroPaused]);
 
   const handleImageClick = (product: { title: string; slug: string }) => {
+    previewTriggerRef.current = document.activeElement as HTMLElement | null;
     setExpandedImage({
       src: `/products/${product.slug}.jpg`,
       title: product.title,
@@ -232,21 +240,30 @@ export default function Home() {
 
   const closeModal = () => setExpandedImage(null);
 
+  const isPreviewOpen = expandedImage !== null;
+
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && expandedImage) setExpandedImage(null);
+    if (!isPreviewOpen) return;
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setExpandedImage(null);
+      // The close button is the only control in the preview, so keep focus on it.
+      if (e.key === "Tab") {
+        e.preventDefault();
+        previewCloseRef.current?.focus();
+      }
     };
 
-    if (expandedImage) {
-      document.addEventListener("keydown", handleEscape);
-      document.body.style.overflow = "hidden";
-    }
+    document.addEventListener("keydown", handleKey);
+    document.body.style.overflow = "hidden";
+    previewCloseRef.current?.focus();
 
     return () => {
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener("keydown", handleKey);
       document.body.style.overflow = "unset";
+      previewTriggerRef.current?.focus();
     };
-  }, [expandedImage]);
+  }, [isPreviewOpen]);
 
   return (
     <div className={styles.page}>
@@ -338,7 +355,11 @@ export default function Home() {
               </div>
             </div>
 
-            <div className={styles.heroVisual}>
+            <div
+              className={styles.heroVisual}
+              onMouseEnter={() => setHeroPaused(true)}
+              onMouseLeave={() => setHeroPaused(false)}
+            >
               {heroProducts.map((product, i) => (
                 <div key={product.slug} className={styles.heroVisualThumb}>
                   <Image
@@ -346,6 +367,7 @@ export default function Home() {
                     alt={product.title}
                     width={480}
                     height={480}
+                    sizes="(max-width: 980px) 50vw, 25vw"
                     className={styles.heroVisualImage}
                     priority={i < 2}
                   />
@@ -398,7 +420,6 @@ export default function Home() {
                     height={640}
                     sizes="(max-width: 760px) 50vw, (max-width: 1000px) 33vw, 25vw"
                     className={styles.productImage}
-                    unoptimized
                   />
                 </button>
                 <div className={styles.productBody}>
@@ -544,21 +565,21 @@ export default function Home() {
                 <div className={styles.complianceRow}>
                   <span className={styles.complianceKey}>GSTIN</span>
                   <span className={styles.complianceValue}>10BLDPS1721F1ZP</span>
-                  <span className={styles.complianceCheck} data-tooltip="Verified" aria-label="Verified" tabIndex={0}>
+                  <span className={styles.complianceCheck} data-tooltip="Verified" role="img" aria-label="Verified" tabIndex={0}>
                     <ProductIcon name="checkCircle" size={14} strokeWidth={2.4} />
                   </span>
                 </div>
                 <div className={styles.complianceRow}>
                   <span className={styles.complianceKey}>PAN</span>
                   <span className={styles.complianceValue}>BLDPS1721F</span>
-                  <span className={styles.complianceCheck} data-tooltip="Verified" aria-label="Verified" tabIndex={0}>
+                  <span className={styles.complianceCheck} data-tooltip="Verified" role="img" aria-label="Verified" tabIndex={0}>
                     <ProductIcon name="checkCircle" size={14} strokeWidth={2.4} />
                   </span>
                 </div>
                 <div className={styles.complianceRow}>
                   <span className={styles.complianceKey}>IEC Compliant</span>
                   <span className={styles.complianceValue}>BLDPS1721F</span>
-                  <span className={styles.complianceCheck} data-tooltip="Verified" aria-label="Verified" tabIndex={0}>
+                  <span className={styles.complianceCheck} data-tooltip="Verified" role="img" aria-label="Verified" tabIndex={0}>
                     <ProductIcon name="checkCircle" size={14} strokeWidth={2.4} />
                   </span>
                 </div>
@@ -593,15 +614,22 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className={styles.footerCopyright}>
+          {/* The year can differ between the static build and the visitor's clock. */}
+          <div className={styles.footerCopyright} suppressHydrationWarning>
             © {new Date().getFullYear()} Shree Dholi Sati Fabrics. All rights reserved.
           </div>
         </footer>
       </main>
 
       {expandedImage && (
-        <div className={styles.modalOverlay} onClick={closeModal}>
-          <button className={styles.closeButton} onClick={closeModal} aria-label="Close preview" type="button">
+        <div
+          className={styles.modalOverlay}
+          onClick={closeModal}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${expandedImage.title} preview`}
+        >
+          <button ref={previewCloseRef} className={styles.closeButton} onClick={closeModal} aria-label="Close preview" type="button">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <line x1="6" y1="6" x2="18" y2="18" />
               <line x1="18" y1="6" x2="6" y2="18" />

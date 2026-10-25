@@ -8,6 +8,7 @@ import {
   normalizeIndianPhone,
   type QuoteRequest,
 } from "@/lib/quote";
+import { whatsappLink } from "@/lib/contact";
 
 const siteUrl = "https://www.dholisatifabrics.com";
 const siteName = "Shree Dholi Sati Fabrics";
@@ -26,17 +27,37 @@ const mailer =
       })
     : null;
 
-// Basic per-IP limit. Resets when the server restarts, which is fine for a small enquiry form.
-const RATE_LIMIT = 5;
-const RATE_WINDOW_MS = 10 * 60 * 1000;
-const recentRequests = new Map<string, number[]>();
+// In-memory limits. They reset when the server restarts, which is fine for a small
+// enquiry form. The daily caps stop the form from being used to send bulk email
+// through the Gmail account, since every enquiry CCs the address it was given.
+const IP_LIMIT = 5;
+const IP_WINDOW_MS = 10 * 60 * 1000;
+const PER_EMAIL_DAILY_LIMIT = 3;
+const GLOBAL_DAILY_LIMIT = 100;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
-function isRateLimited(ip: string): boolean {
+const ipHits = new Map<string, number[]>();
+const emailHits = new Map<string, number[]>();
+let sentToday: number[] = [];
+
+function recordHit(store: Map<string, number[]>, key: string, windowMs: number): number {
   const now = Date.now();
-  const hits = (recentRequests.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
+  const hits = (store.get(key) ?? []).filter((t) => now - t < windowMs);
   hits.push(now);
-  recentRequests.set(ip, hits);
-  return hits.length > RATE_LIMIT;
+  store.set(key, hits);
+  // Drop stale keys so the map can't grow without bound.
+  if (store.size > 5000) {
+    for (const [k, v] of store) {
+      if (v.every((t) => now - t >= windowMs)) store.delete(k);
+    }
+  }
+  return hits.length;
+}
+
+function dailySendCapReached(): boolean {
+  const now = Date.now();
+  sentToday = sentToday.filter((t) => now - t < DAY_MS);
+  return sentToday.length >= GLOBAL_DAILY_LIMIT;
 }
 
 function clean(value: unknown, max: number): string {
@@ -102,7 +123,6 @@ function buildEmail(e: Enquiry) {
     { label: "Comments", value: e.message },
     { label: "Enquiry page", value: e.sourceUrl },
   ]);
-  const whatsappText = encodeURIComponent(`Hi, I sent a quote request for ${e.productTitle} on your website.`);
 
   const text = [
     `Hi ${firstName},`,
@@ -133,7 +153,7 @@ function buildEmail(e: Enquiry) {
         ${details.html}
       </div>
       <div style="padding:18px 24px 16px;">
-        <a href="https://wa.me/${businessPhone}?text=${whatsappText}" style="${primaryButton}">WhatsApp us</a>
+        <a href="${whatsappLink(`Hi, I sent a quote request for ${e.productTitle} on your website.`)}" style="${primaryButton}">WhatsApp us</a>
         <a href="tel:+91${businessPhone}" style="${secondaryButton}">Call +91 ${businessPhone}</a>
         ${e.productUrl ? `<a href="${e.productUrl}" style="${secondaryButton}">View product</a>` : ""}
       </div>
@@ -149,7 +169,7 @@ function buildEmail(e: Enquiry) {
 
 export async function POST(request: Request) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
-  if (isRateLimited(ip)) {
+  if (recordHit(ipHits, ip, IP_WINDOW_MS) > IP_LIMIT) {
     return NextResponse.json(
       { error: "Too many requests. Please try again in a few minutes or message us on WhatsApp." },
       { status: 429 },
@@ -160,6 +180,9 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
+  if (!body || typeof body !== "object") {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
@@ -181,7 +204,7 @@ export async function POST(request: Request) {
   const message = clean(body.message, fieldLimits.message);
   if (message.length < 3) errors.message = "Please tell us a little about what you need.";
 
-  const product = products[productSlug];
+  const product = Object.hasOwn(products, productSlug) ? products[productSlug] : undefined;
   if (!product && productSlug !== OTHER_PRODUCT_SLUG) errors.product = "Please choose a product.";
   if (productSlug === OTHER_PRODUCT_SLUG && otherProduct.length < 2) {
     errors.otherProduct = "Please tell us which product you need.";
@@ -201,6 +224,14 @@ export async function POST(request: Request) {
     message,
     sourceUrl: sourcePath.startsWith("/") ? `${siteUrl}${sourcePath}` : siteUrl,
   };
+
+  const tooManyForEmail = recordHit(emailHits, email.toLowerCase(), DAY_MS) > PER_EMAIL_DAILY_LIMIT;
+  if (tooManyForEmail || dailySendCapReached()) {
+    return NextResponse.json(
+      { error: "We've received several requests already. Please message us on WhatsApp and we'll help you right away." },
+      { status: 429 },
+    );
+  }
 
   const { text, html } = buildEmail(enquiry);
   const subject = `Quote request: ${enquiry.productTitle} from ${enquiry.name}`;
@@ -238,5 +269,6 @@ export async function POST(request: Request) {
     );
   }
 
+  sentToday.push(Date.now());
   return NextResponse.json({ ok: true });
 }
