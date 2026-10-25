@@ -115,6 +115,17 @@
   display: none;
 }
 
+.navQuoteIcon {
+  display: inline-flex;
+}
+
+button.navButton,
+button.ctaStripPrimary {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
 /* ---------- Layout ---------- */
 
 .inner {
@@ -1187,6 +1198,14 @@
     padding: 11px 13px;
     gap: 0;
     min-width: 40px;
+    min-height: 40px;
+  }
+
+  .navQuoteIcon {
+    display: none;
+  }
+
+  .navButtonOutline {
     min-height: 40px;
   }
 
