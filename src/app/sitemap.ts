@@ -13,6 +13,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
       images: [`${siteUrl}/logo.jpeg`],
     },
+    {
+      url: `${siteUrl}/about`,
+      lastModified: now,
+      changeFrequency: "yearly",
+      priority: 0.6,
+    },
     ...productSlugs.map((slug) => {
       const product = products[slug];
       return {

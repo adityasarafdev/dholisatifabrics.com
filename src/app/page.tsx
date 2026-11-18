@@ -286,6 +286,9 @@ export default function Home() {
             <span className={styles.navBrandName}>Shree Dholi Sati Fabrics</span>
           </Link>
           <div className={styles.navRight}>
+            <Link href="/about" className={styles.navTextLink}>
+              About
+            </Link>
             <a
               href="/catalogue.pdf"
               download
@@ -613,6 +616,11 @@ export default function Home() {
                 Industrial bags, tarpaulins, non-woven rolls, and printing.
               </div>
             </div>
+          </div>
+          <div className={styles.footerLinks}>
+            <Link href="/about">About us</Link>
+            <a href="#products">Products</a>
+            <a href="#contact">Contact</a>
           </div>
           {/* The year can differ between the static build and the visitor's clock. */}
           <div className={styles.footerCopyright} suppressHydrationWarning>

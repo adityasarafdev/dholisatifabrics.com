@@ -115,6 +115,20 @@
   display: none;
 }
 
+.navTextLink {
+  padding: 8px 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-2);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: color 0.2s ease;
+}
+
+.navTextLink:hover {
+  color: var(--text);
+}
+
 .navQuoteIcon {
   display: inline-flex;
 }
@@ -984,6 +998,21 @@ button.ctaStripPrimary {
   margin-top: 2px;
 }
 
+.footerLinks {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+}
+
+.footerLinks a {
+  color: var(--text-2);
+  text-decoration: none;
+}
+
+.footerLinks a:hover {
+  color: var(--text);
+}
+
 .footerCopyright {
   font-size: 13px;
   color: var(--muted);
@@ -1104,6 +1133,8 @@ button.ctaStripPrimary {
 .secondaryCta:focus-visible,
 .navButton:focus-visible,
 .navButtonOutline:focus-visible,
+.navTextLink:focus-visible,
+.footerLinks a:focus-visible,
 .productLink:focus-visible,
 .contactValue:focus-visible,
 .ctaStripPrimary:focus-visible,
@@ -1188,6 +1219,10 @@ button.ctaStripPrimary {
 @media (max-width: 640px) {
   .navBrandName {
     font-size: 14px;
+  }
+
+  .navTextLink {
+    display: none;
   }
 
   .navButtonText {
